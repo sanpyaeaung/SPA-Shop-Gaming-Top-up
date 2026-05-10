@@ -18,38 +18,42 @@ async function startServer() {
     const { game, id, zone } = req.params;
 
     try {
+      const validateWithAPI = async (url: string) => {
+        try {
+          const resp = await axios.get(url, { timeout: 5000 });
+          return resp.data && resp.data.status === 200 ? resp.data.username : null;
+        } catch {
+          return null;
+        }
+      };
+
+      let playerName = null;
+
       if (game === "mlbb") {
         if (!zone) return res.status(400).json({ error: "Zone ID is required for MLBB" });
         
-        // Using a common community API for MLBB validation
-        // Note: These public APIs can be unstable. In production, consider a paid provider like RapidAPI.
-        const response = await axios.get(`https://api-reborn-smile.up.railway.app/ml?id=${id}&zone=${zone}`);
-        
-        if (response.data && response.data.status === 200) {
-          return res.json({ playerName: response.data.username });
-        } else {
-          return res.status(404).json({ error: "Player not found or API error" });
-        }
+        // Try multiple public endpoints for MLBB
+        playerName = await validateWithAPI(`https://api-reborn-smile.up.railway.app/ml?id=${id}&zone=${zone}`);
+        if (!playerName) playerName = await validateWithAPI(`https://nickname-finder.onrender.com/mlbb/${id}/${zone}`);
       } 
       
       if (game === "ff") {
-        // Free Fire validation often uses different endpoints
-        // Example logic for FF (using a public aggregator if available)
-        const response = await axios.get(`https://api-reborn-smile.up.railway.app/ff?id=${id}`);
-        if (response.data && response.data.status === 200) {
-          return res.json({ playerName: response.data.username });
-        }
+        playerName = await validateWithAPI(`https://api-reborn-smile.up.railway.app/ff?id=${id}`);
+        if (!playerName) playerName = await validateWithAPI(`https://nickname-finder.onrender.com/freefire/${id}`);
       }
 
       if (game === "pubg") {
-        const response = await axios.get(`https://api-reborn-smile.up.railway.app/pubgm?id=${id}`);
-        if (response.data && response.data.status === 200) {
-          return res.json({ playerName: response.data.username });
-        }
+        playerName = await validateWithAPI(`https://api-reborn-smile.up.railway.app/pubgm?id=${id}`);
+        if (!playerName) playerName = await validateWithAPI(`https://nickname-finder.onrender.com/pubgm/${id}`);
       }
 
-      // Fallback/Placeholder if game not supported or API fails
-      res.status(400).json({ error: "Unsupported game or validation failed" });
+      if (playerName) {
+        return res.json({ playerName });
+      }
+
+      // If still null, provide a generic "Found" message for popular games to not block UX if APIs are laggy
+      // But we prefer real validation. For this demo, let's return error if real validation fails.
+      res.status(404).json({ error: "Player not found. Check ID/Zone." });
     } catch (error) {
       console.error("Validation error:", error);
       res.status(500).json({ error: "External API error" });

@@ -96,124 +96,134 @@ export default function GameDetail({ userData }: { userData: any }) {
       </div>
 
       <section className="glass-card overflow-hidden">
-        <img src={game.banner} alt={game.name} className="w-full h-32 object-cover" />
-        <div className="p-4 flex items-center space-x-4 -mt-10 relative z-10">
-          <img src={game.logo} alt={game.name} className="w-20 h-20 rounded-2xl border-4 border-brand-dark shadow-xl" />
-          <div className="pt-8">
-            <h2 className="font-bold text-lg">{game.name}</h2>
-            <div className="flex items-center space-x-1 text-xs text-slate-400">
-              <CheckCircle2 size={12} className="text-brand-green" />
+        <div className="relative h-24">
+          <img src={game.banner} alt={game.name} className="w-full h-full object-cover opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent" />
+        </div>
+        <div className="p-4 flex items-center space-x-4 -mt-12 relative z-10">
+          <div className="w-20 h-20 bg-brand-dark rounded-2xl p-1 shadow-2xl">
+            <img src={game.logo} alt={game.name} className="w-full h-full rounded-xl object-contain bg-white/5" />
+          </div>
+          <div className="pt-6">
+            <h2 className="font-black text-xl text-white uppercase tracking-tight">{game.name}</h2>
+            <div className="flex items-center space-x-1 text-[10px] text-brand-green font-black uppercase tracking-widest">
+              <CheckCircle2 size={12} />
               <span>Official Top-up</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="glass-card p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-xs uppercase text-brand-green font-black ml-1 tracking-widest">User ID & Info</label>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
-                  placeholder="Enter User ID" 
-                  className={cn(
-                    "bg-purple-900/30 border border-purple-500/30 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-green text-sm transition-all",
-                    game.requiresZone ? "w-2/3" : "flex-1"
-                  )}
-                />
-                {game.requiresZone && (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <section className="glass-card p-5 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase text-brand-green font-black ml-1 tracking-[0.2em]">Game Identity</label>
+                <div className="flex gap-2">
                   <input 
                     type="text" 
-                    value={zoneId}
-                    onChange={(e) => setZoneId(e.target.value)}
-                    placeholder="Zone" 
-                    className="w-1/3 bg-purple-900/30 border border-purple-500/30 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-green text-sm transition-all"
+                    value={id}
+                    onChange={(e) => setId(e.target.value)}
+                    placeholder="User ID" 
+                    className={cn(
+                      "bg-purple-900/20 border border-purple-500/20 rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-green text-sm transition-all",
+                      game.requiresZone ? "w-2/3" : "flex-1"
+                    )}
                   />
-                )}
-                <button 
-                  onClick={validateId}
-                  disabled={!id || (game.requiresZone && !zoneId) || validating}
-                  className="bg-brand-purple hover:bg-brand-purple/80 px-4 rounded-xl font-bold flex items-center justify-center min-w-[60px] transition-all text-xs uppercase tracking-widest"
+                  {game.requiresZone && (
+                    <input 
+                      type="text" 
+                      value={zoneId}
+                      onChange={(e) => setZoneId(e.target.value)}
+                      placeholder="Zone" 
+                      className="w-1/3 bg-purple-900/20 border border-purple-500/20 rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-green text-sm transition-all"
+                    />
+                  )}
+                  <button 
+                    onClick={validateId}
+                    disabled={!id || (game.requiresZone && !zoneId) || validating}
+                    className="bg-brand-purple hover:bg-brand-purple/80 px-4 rounded-xl font-bold flex items-center justify-center min-w-[60px] transition-all text-[10px] uppercase tracking-widest"
+                  >
+                    {validating ? <Loader2 className="animate-spin" size={16} /> : 'Check'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase text-brand-green font-black ml-1 tracking-[0.2em]">Verification</label>
+                <div className={cn(
+                  "bg-black/20 border border-purple-500/10 rounded-xl px-4 py-2.5 flex items-center justify-between min-h-[42px]",
+                  playerName ? "border-brand-green/40 shadow-[0_0_10px_rgba(57,255,20,0.1)]" : ""
+                )}>
+                  <span className="text-[10px] text-gray-500 font-black uppercase">Name:</span>
+                  <span className={cn(
+                    "text-xs font-black uppercase tracking-tight",
+                    playerName ? "text-brand-green" : "text-gray-600"
+                  )}>
+                    {playerName || 'Waiting...'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] px-2 flex items-center gap-2">
+              <ShoppingBag size={14} className="text-brand-green" />
+              Available Diamond Packs
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {game.items.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedItem(item.id)}
+                  className={cn(
+                    "glass-card p-4 flex flex-col items-center gap-1 transition-all relative overflow-hidden group",
+                    selectedItem === item.id 
+                      ? "border-brand-green bg-brand-green/5 shadow-[0_0_15px_rgba(57,255,20,0.1)]" 
+                      : "hover:border-white/10 bg-purple-900/5"
+                  )}
                 >
-                  {validating ? <Loader2 className="animate-spin" size={18} /> : 'Check'}
+                  <div className="text-xl font-black text-white group-hover:scale-110 transition-transform">
+                    {item.amount} <span className="text-[10px] text-brand-green">💎</span>
+                  </div>
+                  <div className="text-[11px] font-bold text-gray-400">{formatMMK(item.price)}</div>
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* Sidebar Order Panel */}
+        <div className="space-y-4">
+          <div className="glass-card p-5 space-y-4 sticky top-24">
+            <h3 className="text-xs font-black text-white uppercase tracking-widest border-b border-white/5 pb-2">Order Summary</h3>
+            {selectedItem ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-bold">Package:</span>
+                  <span className="text-white font-black">{game.items.find(i => i.id === selectedItem)?.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-bold">Total:</span>
+                  <span className="text-brand-green font-black text-lg">{formatMMK(game.items.find(i => i.id === selectedItem)?.price || 0)}</span>
+                </div>
+                <button
+                  onClick={handleOrder}
+                  disabled={submitting || !playerName}
+                  className="w-full bg-brand-green py-4 rounded-xl text-black font-black text-sm hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] transition-all uppercase tracking-widest disabled:opacity-50"
+                >
+                  {submitting ? <Loader2 className="animate-spin mx-auto text-black" size={20} /> : 'Process Checkout'}
                 </button>
               </div>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs uppercase text-brand-green font-black ml-1 tracking-widest">Verification Result</label>
-            <div className={cn(
-              "bg-purple-500/10 border border-purple-500/30 rounded-xl px-4 py-3 flex items-center justify-between min-h-[48px]",
-              playerName ? "border-brand-green/40 shadow-[0_0_10px_rgba(57,255,20,0.1)]" : ""
-            )}>
-              <span className="text-sm text-gray-400 font-medium">Player:</span>
-              <span className={cn(
-                "text-sm font-black uppercase",
-                playerName ? "text-brand-green" : "text-gray-500"
-              )}>
-                {playerName || 'Pending...'}
-              </span>
-            </div>
+            ) : (
+              <p className="text-[10px] text-gray-600 font-black uppercase text-center py-10 tracking-widest italic">Please select diamonds to continue</p>
+            )}
+            {error && <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-[10px] font-bold uppercase tracking-tight text-center">{error}</div>}
           </div>
         </div>
-
-        <div className="flex items-start space-x-2 p-3 bg-brand-purple/10 rounded-xl border border-brand-purple/20">
-          <Info size={16} className="text-brand-purple shrink-0 mt-0.5" />
-          <p className="text-[11px] text-purple-300 font-medium italic">
-            ID မှန်မမှန် သေချာစွာ စစ်ဆေးပါ။ အကယ်၍ ID မှားယွင်းပါက ပြန်လည်တာဝန်ယူပေးမည် မဟုတ်ပါ။
-          </p>
-        </div>
-      </section>
-
-      {/* Step 2: Select Items */}
-      <section className="space-y-4">
-        <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] px-2">Choose Diamond Pack</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {game.items.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setSelectedItem(item.id)}
-              className={cn(
-                "glass-card p-5 flex flex-col items-center gap-2 transition-all relative overflow-hidden group",
-                selectedItem === item.id 
-                  ? "border-brand-green bg-brand-green/10 shadow-[0_0_20px_rgba(57,255,20,0.2)]" 
-                  : "hover:border-brand-green/40 bg-purple-900/20"
-              )}
-            >
-              {item.amount > 500 && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-green text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">
-                  Popular
-                </div>
-              )}
-              <div className="text-2xl font-black text-brand-green group-hover:scale-110 transition-transform">
-                {item.amount} <span className="text-xs text-white">💎</span>
-              </div>
-              <div className="text-sm font-bold text-gray-100">{formatMMK(item.price)}</div>
-              <div className="text-[9px] text-purple-400 font-bold uppercase tracking-widest mt-1">Instant Delivery</div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Summary & Pay */}
-      <section className={cn(
-        "fixed bottom-24 md:bottom-6 left-4 right-4 md:left-auto md:right-8 lg:right-12 z-40 transition-all duration-500 max-w-sm ml-auto",
-        selectedItem ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
-      )}>
-        <button
-          onClick={handleOrder}
-          disabled={submitting || !playerName}
-          className="w-full bg-brand-green py-5 rounded-2xl text-black font-black text-lg hover:shadow-[0_0_30px_rgba(57,255,20,0.5)] transition-all uppercase tracking-[0.2em] shadow-2xl disabled:opacity-50 disabled:grayscale"
-        >
-          {submitting ? <Loader2 className="animate-spin mx-auto" /> : <span>Purchase Now</span>}
-        </button>
-        {error && <div className="mt-2 p-2 bg-red-500/20 text-red-500 rounded-lg text-center text-xs font-bold uppercase border border-red-500/30">{error}</div>}
-      </section>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestor
 import { db } from '../lib/firebase';
 import { formatMMK, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, CreditCard, ChevronRight, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { ShoppingBag, CreditCard, ChevronRight, Clock, CheckCircle2, XCircle, History as HistoryIcon, Loader2 } from 'lucide-react';
 
 export default function HistoryPage({ userData }: { userData: any }) {
   const [tab, setTab] = useState<'orders' | 'topups'>('orders');

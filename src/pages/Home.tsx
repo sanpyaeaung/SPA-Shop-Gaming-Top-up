@@ -36,32 +36,33 @@ export default function Home() {
           <span className="text-[10px] font-bold text-slate-500 uppercase">Total {GAMES.length} games</span>
         </div>
         
-        <div className="grid grid-cols-1 gap-3 overflow-y-auto pr-2 custom-scrollbar max-h-[500px]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto pr-2 custom-scrollbar max-h-[500px]">
           {GAMES.map((game, i) => (
             <motion.div
               key={game.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05 }}
             >
               <Link 
                 to={`/game/${game.id}`}
-                className="group bg-purple-900/20 border-l-4 border-transparent hover:border-brand-green p-4 rounded-xl flex items-center gap-4 transition-all hover:bg-purple-800/40 cursor-pointer glass-card"
+                className="group relative flex flex-col items-center gap-3 p-4 bg-purple-900/10 border border-purple-500/10 hover:border-brand-green/40 rounded-[2rem] transition-all hover:bg-purple-800/20 cursor-pointer glass-card"
               >
-                <div className="w-16 h-16 bg-gray-800 rounded-lg border border-purple-500/30 overflow-hidden shadow-inner shrink-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-800 rounded-2xl border border-purple-500/30 overflow-hidden shadow-2xl shrink-0 group-hover:scale-110 transition-transform duration-500">
                   <img 
                     src={game.logo} 
                     alt={game.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100"
+                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100"
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="font-bold text-lg group-hover:text-brand-green transition-colors">{game.name}</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-widest font-medium">Official Recharge</div>
+                <div className="text-center space-y-1">
+                  <div className="font-black text-[10px] sm:text-xs uppercase tracking-tighter text-white group-hover:text-brand-green transition-colors truncate max-w-[100px]">
+                    {game.name}
+                  </div>
+                  <div className="text-[7px] text-gray-500 font-bold uppercase tracking-widest hidden sm:block">Official</div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all">
-                  <ChevronRight size={18} className="text-brand-green" />
-                </div>
+                {/* Badge Overlay */}
+                <div className="absolute top-2 right-2 w-2 h-2 bg-brand-green rounded-full shadow-[0_0_8px_#39FF14] animate-pulse" />
               </Link>
             </motion.div>
           ))}
