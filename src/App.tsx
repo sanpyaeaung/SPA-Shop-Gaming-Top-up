@@ -30,9 +30,18 @@ import ResellerGuide from './pages/ResellerGuide';
 export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch global settings
+    const settingsRef = doc(db, 'settings', 'config');
+    const unsubSettings = onSnapshot(settingsRef, (snap) => {
+      if (snap.exists()) {
+        setSettings(snap.data());
+      }
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
@@ -55,7 +64,6 @@ export default function App() {
           setUserData(newData);
 
           // Seed settings if not exists
-          const settingsRef = doc(db, 'settings', 'config');
           const settingsSnap = await getDoc(settingsRef);
           if (!settingsSnap.exists()) {
             await setDoc(settingsRef, {
@@ -63,7 +71,8 @@ export default function App() {
               kbzPayNumber: '09791234567',
               waveMoneyName: 'SPA-Shop Admin',
               waveMoneyNumber: '09791234567',
-              maintenance: false
+              maintenance: false,
+              apkUrl: ''
             });
           }
         } else {
@@ -82,7 +91,10 @@ export default function App() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      unsubSettings();
+    };
   }, []);
 
   const login = async () => {
@@ -90,9 +102,12 @@ export default function App() {
       await signInWithPopup(auth, googleProvider);
     } catch (error: any) {
       console.error("Login Error:", error);
-      // Firebase auth/cancelled-popup-request is common if double clicked
-      if (error.code !== 'auth/cancelled-popup-request') {
-        alert("Login Error: " + error.message + "\n\nPlease ensure Google Login is enabled in Firebase Console and popups are allowed.");
+      if (error.code === 'auth/popup-blocked') {
+        alert("Pop-up blocked! Please allow pop-ups for this site to log in with Google.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert("Unauthorized Domain! Please add this domain to the 'Authorized Domains' list in your Firebase Console (Auth Settings).");
+      } else if (error.code !== 'auth/cancelled-popup-request') {
+        alert("Login Error: " + error.message + "\n\n1. Ensure Google Login is enabled in Firebase Console.\n2. Ensure this domain is in Authorized Domains list.");
       }
     }
   };
@@ -111,7 +126,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <Landing login={login} />;
+    return <Landing login={login} settings={settings} />;
   }
 
   return (
@@ -138,7 +153,7 @@ export default function App() {
   );
 }
 
-function Landing({ login }: { login: () => void }) {
+function Landing({ login, settings }: { login: () => void, settings: any }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d0b5a] to-[#0a0510] flex flex-col items-center justify-center p-6 text-center space-y-8 overflow-hidden relative">
       {/* Background Blobs */}
@@ -177,11 +192,11 @@ function Landing({ login }: { login: () => void }) {
         <motion.a
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          href="#" // User should replace this with real APK link
+          href={settings?.apkUrl || "#"}
           onClick={(e) => {
-            if (e.currentTarget.getAttribute('href') === '#') {
+            if (!settings?.apkUrl) {
               e.preventDefault();
-              alert("APK link has not been set yet. Please add your APK download URL in App.tsx");
+              alert("APK link has not been set yet. Admin can set it in the Admin Dashboard.");
             }
           }}
           className="bg-white/5 border border-white/10 text-white px-10 py-5 rounded-2xl font-black flex items-center space-x-3 hover:bg-white/10 transition-all uppercase tracking-widest"

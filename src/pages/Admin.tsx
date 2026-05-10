@@ -34,7 +34,8 @@ export default function AdminDashboard() {
     kbzPayName: '',
     kbzPayNumber: '',
     waveMoneyName: '',
-    waveMoneyNumber: ''
+    waveMoneyNumber: '',
+    apkUrl: ''
   });
   const [savingSettings, setSavingSettings] = useState(false);
 
@@ -231,6 +232,11 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input label="Name" value={settings.waveMoneyName} onChange={v => setSettings({...settings, waveMoneyName: v})} />
                 <Input label="Number" value={settings.waveMoneyNumber} onChange={v => setSettings({...settings, waveMoneyNumber: v})} />
+              </div>
+
+              <h3 className="text-xs font-bold text-slate-400 uppercase pt-4 border-t border-white/5">Application Settings</h3>
+              <div className="grid grid-cols-1 gap-4">
+                <Input label="APK Download URL" value={settings.apkUrl || ''} onChange={v => setSettings({...settings, apkUrl: v})} />
               </div>
             </div>
 
