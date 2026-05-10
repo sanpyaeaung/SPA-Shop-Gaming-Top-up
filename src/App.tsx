@@ -13,7 +13,8 @@ import {
   LogOut,
   ChevronRight,
   ShieldCheck,
-  TrendingUp
+  TrendingUp,
+  Download
 } from 'lucide-react';
 import { cn, formatMMK } from './lib/utils';
 
@@ -84,7 +85,17 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const login = () => signInWithPopup(auth, googleProvider);
+  const login = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error: any) {
+      console.error("Login Error:", error);
+      // Firebase auth/cancelled-popup-request is common if double clicked
+      if (error.code !== 'auth/cancelled-popup-request') {
+        alert("Login Error: " + error.message + "\n\nPlease ensure Google Login is enabled in Firebase Console and popups are allowed.");
+      }
+    }
+  };
   const logout = () => signOut(auth);
 
   if (loading) {
@@ -148,15 +159,37 @@ function Landing({ login }: { login: () => void }) {
         </p>
       </motion.div>
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={login}
-        className="bg-brand-green text-black px-10 py-5 rounded-2xl font-black flex items-center space-x-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:shadow-[0_0_40px_rgba(57,255,20,0.6)] transition-all relative z-10 uppercase tracking-widest"
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row gap-4 relative z-10"
       >
-        <img src="https://www.google.com/favicon.ico" alt="Google" className="w-6 h-6 contrast-125" />
-        <span>Continue with Google</span>
-      </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={login}
+          className="bg-brand-green text-black px-10 py-5 rounded-2xl font-black flex items-center space-x-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:shadow-[0_0_40px_rgba(57,255,20,0.6)] transition-all uppercase tracking-widest"
+        >
+          <img src="https://www.google.com/favicon.ico" alt="Google" className="w-6 h-6 contrast-125" />
+          <span>Continue with Google</span>
+        </motion.button>
+
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          href="#" // User should replace this with real APK link
+          onClick={(e) => {
+            if (e.currentTarget.getAttribute('href') === '#') {
+              e.preventDefault();
+              alert("APK link has not been set yet. Please add your APK download URL in App.tsx");
+            }
+          }}
+          className="bg-white/5 border border-white/10 text-white px-10 py-5 rounded-2xl font-black flex items-center space-x-3 hover:bg-white/10 transition-all uppercase tracking-widest"
+        >
+          <Download size={24} className="text-brand-green" />
+          <span>Download App (APK)</span>
+        </motion.a>
+      </motion.div>
     </div>
   );
 }
