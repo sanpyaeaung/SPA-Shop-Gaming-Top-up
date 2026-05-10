@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and balance information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "balance": { "type": "number", "description": "User's current credits in MMK" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "balance", "role"]
+    },
+    "TopupRequest": {
+      "title": "Topup Request",
+      "description": "User request to add funds to their wallet",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "method": { "type": "string", "enum": ["KBZ Pay", "Wave Money"] },
+        "amount": { "type": "number" },
+        "transactionId": { "type": "string" },
+        "senderPhone": { "type": "string" },
+        "senderName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "processedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "method", "amount", "transactionId", "status"]
+    },
+    "Order": {
+      "title": "Game Item Order",
+      "description": "Purchase of game diamonds or gems",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "gameId": { "type": "string", "description": "The category ID of the game" },
+        "gameName": { "type": "string" },
+        "playerGameId": { "type": "string", "description": "The ID of the player in-game" },
+        "playerName": { "type": "string", "description": "The name of the player in-game" },
+        "itemId": { "type": "string" },
+        "itemName": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "gameId", "playerGameId", "itemId", "price", "status"]
+    },
+    "Settings": {
+      "title": "App Settings",
+      "description": "Configurable payment methods and global settings",
+      "type": "object",
+      "properties": {
+        "kbzPayName": { "type": "string" },
+        "kbzPayNumber": { "type": "string" },
+        "waveMoneyName": { "type": "string" },
+        "waveMoneyNumber": { "type": "string" },
+        "maintenance": { "type": "boolean" }
+      }
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Collection of user profiles"
+    },
+    "topupRequests": {
+      "schema": "TopupRequest",
+      "description": "Collection of wallet top-up requests"
+    },
+    "orders": {
+      "schema": "Order",
+      "description": "Collection of game top-up orders"
+    },
+    "settings": {
+      "schema": "Settings",
+      "description": "Global app configuration documents"
+    }
+  }
+}

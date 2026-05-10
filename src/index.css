@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #39FF14;
+  --color-brand-purple: #7c3aed;
+  --color-brand-dark: #0a0510;
+  --color-brand-bg: radial-gradient(circle at top left, #2d0b5a, #1a0b2e, #0a0510);
+  
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  background-color: var(--color-brand-dark);
+  color: white;
+}
+
+@layer base {
+  body {
+    @apply font-sans;
+    background: var(--color-brand-bg) fixed;
+  }
+}
+
+.glass-card {
+  @apply bg-black/40 backdrop-blur-md border border-purple-500/20 rounded-2xl;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-brand-green text-black font-black rounded-xl active:scale-95 transition-all shadow-[0_0_15px_rgba(57,255,20,0.4)] hover:shadow-[0_0_25px_rgba(57,255,20,0.6)];
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-brand-purple text-white font-bold rounded-xl active:scale-95 transition-all shadow-lg shadow-brand-purple/20;
+}
+
+/* Water drop shape */
+.water-drop {
+  border-radius: 50% 50% 50% 50% / 15% 15% 85% 85%;
+  clip-path: path('M 24,0 C 36,0 48,24 48,42 C 48,54 36,66 24,66 C 12,66 0,54 0,42 C 0,24 12,0 24,0 Z');
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-brand-green/20 rounded-full;
+}
+
